@@ -49,3 +49,46 @@ export const FormatWriteResultSchema = z.object({
 });
 
 export type FormatWriteResult = z.infer<typeof FormatWriteResultSchema>;
+
+/** Zod schema for a single Sqlfluff diagnostic. */
+export const SqlfluffDiagnosticSchema = z.object({
+  file: z.string(),
+  line: z.number(),
+  column: z.number().optional(),
+  severity: z.enum(["error", "warning", "info"]),
+  rule: z.string(),
+  message: z.string(),
+  name: z.string().optional(),
+});
+
+/** Zod schema for structured Sqlfluff output including diagnostics and counts. */
+export const SqlfluffResultSchema = z.object({
+  diagnostics: z.array(SqlfluffDiagnosticSchema).optional(),
+  errors: z.number(),
+  warnings: z.number(),
+  filesChecked: z.number(),
+});
+
+export type SqlfluffResult = z.infer<typeof SqlfluffResultSchema>;
+export type SqlfluffDiagnostic = z.infer<typeof SqlfluffDiagnosticSchema>;
+
+/** Zod schema for a single Yamllint diagnostic. */
+export const YamllintDiagnosticSchema = z.object({
+  file: z.string(),
+  line: z.number(),
+  column: z.number().optional(),
+  severity: z.enum(["error", "warning", "info"]),
+  rule: z.string(),
+  message: z.string(),
+});
+
+/** Zod schema for structured Yamllint output. */
+export const YamllintResultSchema = z.object({
+  diagnostics: z.array(YamllintDiagnosticSchema).optional(),
+  errors: z.number(),
+  warnings: z.number(),
+  filesChecked: z.number(),
+});
+
+export type YamllintResult = z.infer<typeof YamllintResultSchema>;
+export type YamllintDiagnostic = z.infer<typeof YamllintDiagnosticSchema>;

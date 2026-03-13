@@ -1,0 +1,11 @@
+dummy_profile:
+  target: dev
+  outputs:
+    dev:
+      type: sqlite
+      threads: 1
+      database: "dummy"
+      schema: "main"
+      schema_directory: "/tmp/dbt_sqlite"
+      schemas_and_paths:
+        main: "/tmp/dummy.db"

@@ -1,0 +1,260 @@
+[
+  {
+    "filepath": "bad.sql",
+    "violations": [
+      {
+        "start_line_no": 2,
+        "start_line_pos": 1,
+        "code": "LT09",
+        "description": "Select targets should be on a new line unless there is only one select target.",
+        "name": "layout.select_targets",
+        "warning": false,
+        "fixes": [
+          {
+            "type": "delete",
+            "edit": "",
+            "start_line_no": 3,
+            "start_line_pos": 5,
+            "start_file_pos": 37,
+            "end_line_no": 3,
+            "end_line_pos": 6,
+            "end_file_pos": 38
+          },
+          {
+            "type": "create_before",
+            "edit": "\n",
+            "start_line_no": 3,
+            "start_line_pos": 6,
+            "start_file_pos": 38,
+            "end_line_no": 3,
+            "end_line_pos": 6,
+            "end_file_pos": 38
+          },
+          {
+            "type": "delete",
+            "edit": "",
+            "start_line_no": 3,
+            "start_line_pos": 8,
+            "start_file_pos": 40,
+            "end_line_no": 3,
+            "end_line_pos": 9,
+            "end_file_pos": 41
+          },
+          {
+            "type": "create_before",
+            "edit": "\n",
+            "start_line_no": 3,
+            "start_line_pos": 9,
+            "start_file_pos": 41,
+            "end_line_no": 3,
+            "end_line_pos": 9,
+            "end_file_pos": 41
+          }
+        ],
+        "start_file_pos": 26,
+        "end_line_no": 4,
+        "end_line_pos": 6,
+        "end_file_pos": 49
+      },
+      {
+        "start_line_no": 3,
+        "start_line_pos": 1,
+        "code": "LT02",
+        "description": "Expected indent of 4 spaces.",
+        "name": "layout.indent",
+        "warning": false,
+        "fixes": [
+          {
+            "type": "replace",
+            "edit": "    ",
+            "start_line_no": 3,
+            "start_line_pos": 1,
+            "start_file_pos": 33,
+            "end_line_no": 3,
+            "end_line_pos": 3,
+            "end_file_pos": 35
+          }
+        ],
+        "start_file_pos": 33,
+        "end_line_no": 3,
+        "end_line_pos": 3,
+        "end_file_pos": 35
+      },
+      {
+        "start_line_no": 5,
+        "start_line_pos": 1,
+        "code": "LT02",
+        "description": "Line should not be indented.",
+        "name": "layout.indent",
+        "warning": false,
+        "fixes": [
+          {
+            "type": "delete",
+            "edit": "",
+            "start_line_no": 5,
+            "start_line_pos": 1,
+            "start_file_pos": 50,
+            "end_line_no": 5,
+            "end_line_pos": 5,
+            "end_file_pos": 54
+          }
+        ],
+        "start_file_pos": 50,
+        "end_line_no": 5,
+        "end_line_pos": 5,
+        "end_file_pos": 54
+      },
+      {
+        "start_line_no": 5,
+        "start_line_pos": 5,
+        "code": "CP01",
+        "description": "Keywords must be consistently upper case.",
+        "name": "capitalisation.keywords",
+        "warning": false,
+        "fixes": [
+          {
+            "type": "replace",
+            "edit": "FROM",
+            "start_line_no": 5,
+            "start_line_pos": 5,
+            "start_file_pos": 54,
+            "end_line_no": 5,
+            "end_line_pos": 9,
+            "end_file_pos": 58
+          }
+        ],
+        "start_file_pos": 54,
+        "end_line_no": 5,
+        "end_line_pos": 9,
+        "end_file_pos": 58
+      },
+      {
+        "start_line_no": 6,
+        "start_line_pos": 1,
+        "code": "LT02",
+        "description": "Line should not be indented.",
+        "name": "layout.indent",
+        "warning": false,
+        "fixes": [
+          {
+            "type": "delete",
+            "edit": "",
+            "start_line_no": 6,
+            "start_line_pos": 1,
+            "start_file_pos": 68,
+            "end_line_no": 6,
+            "end_line_pos": 5,
+            "end_file_pos": 72
+          }
+        ],
+        "start_file_pos": 68,
+        "end_line_no": 6,
+        "end_line_pos": 5,
+        "end_file_pos": 72
+      },
+      {
+        "start_line_no": 6,
+        "start_line_pos": 5,
+        "code": "CP01",
+        "description": "Keywords must be consistently upper case.",
+        "name": "capitalisation.keywords",
+        "warning": false,
+        "fixes": [
+          {
+            "type": "replace",
+            "edit": "WHERE",
+            "start_line_no": 6,
+            "start_line_pos": 5,
+            "start_file_pos": 72,
+            "end_line_no": 6,
+            "end_line_pos": 10,
+            "end_file_pos": 77
+          }
+        ],
+        "start_file_pos": 72,
+        "end_line_no": 6,
+        "end_line_pos": 10,
+        "end_file_pos": 77
+      }
+    ],
+    "statistics": { "source_chars": 84, "templated_chars": 84, "segments": 59, "raw_segments": 38 },
+    "timings": {
+      "templating": 0.0020128749999999695,
+      "lexing": 0.001021542000000042,
+      "parsing": 0.008618374999999956,
+      "linting": 0.008990834000000003,
+      "AL01": 4.9709000000008885e-5,
+      "AL02": 8.499999999966867e-6,
+      "AL03": 0.00012929200000000307,
+      "AL04": 0.00011879199999997869,
+      "AL05": 0.000278208000000002,
+      "AL06": 3.637500000003291e-5,
+      "AL07": 1.5207999999988786e-5,
+      "AL08": 3.1500000000017625e-5,
+      "AL09": 3.8666999999992235e-5,
+      "AM01": 1.829200000003084e-5,
+      "AM02": 4.7080000000199185e-6,
+      "AM03": 4.499999999962867e-6,
+      "AM04": 0.00010733299999998724,
+      "AM05": 6.0829999999900686e-6,
+      "AM06": 5.209000000006014e-6,
+      "AM07": 5.209000000006014e-6,
+      "AM08": 4.541000000024553e-6,
+      "AM09": 1.7749999999983057e-5,
+      "CP01": 0.00026683299999996635,
+      "CP02": 0.0001583750000000439,
+      "CP03": 6.541999999998271e-6,
+      "CP04": 5.375000000029662e-6,
+      "CP05": 5.291999999990082e-6,
+      "CV01": 3.8000000000038e-5,
+      "CV02": 6.0000000000060005e-6,
+      "CV03": 2.7374999999996152e-5,
+      "CV04": 5.166000000000892e-6,
+      "CV05": 3.920900000004002e-5,
+      "CV06": 1.0540999999975043e-5,
+      "CV07": 9.333000000000258e-6,
+      "CV08": 4.41700000003431e-6,
+      "CV09": 7.691700000000967e-5,
+      "CV10": 2.829100000001361e-5,
+      "CV11": 4.583999999974164e-6,
+      "CV12": 4.575000000001106e-5,
+      "JJ01": 7.04099999998542e-6,
+      "LT01": 0.0010982079999999894,
+      "LT02": 0.0014062079999999644,
+      "LT03": 6.0957999999999846e-5,
+      "LT04": 5.249999999995536e-5,
+      "LT05": 0.0005449999999999622,
+      "LT06": 9.917000000025933e-6,
+      "LT07": 6.95899999997307e-6,
+      "LT08": 5.58400000000292e-6,
+      "LT09": 0.00027379199999999493,
+      "LT10": 2.95410000000218e-5,
+      "LT11": 5.041999999955138e-6,
+      "LT12": 3.416700000002937e-5,
+      "LT13": 9.208000000038297e-6,
+      "LT14": 0.00039433299999996896,
+      "LT15": 5.23749999999934e-5,
+      "RF01": 0.00020841599999998905,
+      "RF02": 8.512500000001921e-5,
+      "RF03": 0.00012662499999999133,
+      "RF04": 7.212500000003397e-5,
+      "RF05": 7.833300000004151e-5,
+      "RF06": 0.0002787079999999609,
+      "ST01": 6.416000000009081e-6,
+      "ST02": 4.665999999986514e-6,
+      "ST03": 4.5840000000296754e-6,
+      "ST04": 4.2079999999500295e-6,
+      "ST05": 0.00022937499999997613,
+      "ST06": 4.2874999999997776e-5,
+      "ST07": 4.833999999953598e-6,
+      "ST08": 3.904099999996191e-5,
+      "ST09": 2.9167000000052123e-5,
+      "ST10": 3.545900000001545e-5,
+      "ST11": 2.766699999995348e-5,
+      "ST12": 6.375000000002906e-6,
+      "TQ01": 4.208999999977259e-6,
+      "TQ02": 3.833000000008635e-6,
+      "TQ03": 3.750000000024567e-6
+    }
+  }
+]

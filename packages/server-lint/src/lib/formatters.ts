@@ -1,4 +1,10 @@
-import type { LintResult, FormatCheckResult, FormatWriteResult } from "../schemas/index.js";
+import type {
+  LintResult,
+  FormatCheckResult,
+  FormatWriteResult,
+  SqlfluffResult,
+  YamllintResult,
+} from "../schemas/index.js";
 
 /** Formats structured ESLint results into a human-readable diagnostic summary with file locations. */
 export function formatLint(data: LintResult): string {
@@ -138,4 +144,60 @@ export function formatFormatWriteCompact(data: FormatWriteResultCompact): string
     return `Formatted ${data.filesChanged} files (${data.filesUnchanged} already formatted).`;
   }
   return `Formatted ${data.filesChanged} files.`;
+}
+
+/** Formats structured Sqlfluff results into a human-readable diagnostic summary. */
+export function formatSqlfluff(data: SqlfluffResult): string {
+  const total = data.errors + data.warnings;
+  if (total === 0) return `Sqlfluff: no issues found (${data.filesChecked} files checked).`;
+
+  const lines = [`Sqlfluff: ${data.errors} errors, ${data.warnings} warnings`];
+  for (const d of data.diagnostics ?? []) {
+    const loc = d.column ? `${d.file}:${d.line}:${d.column}` : `${d.file}:${d.line}`;
+    // d.name is the human readable rule name like layout.select_targets
+    const ruleStr = d.name ? `${d.rule} (${d.name})` : d.rule;
+    lines.push(`  ${loc} ${d.severity} ${ruleStr}: ${d.message}`);
+  }
+  return lines.join("\n");
+}
+
+export function compactSqlfluffMap(data: SqlfluffResult): LintResultCompact {
+  return {
+    errors: data.errors,
+    warnings: data.warnings,
+    filesChecked: data.filesChecked,
+  };
+}
+
+export function formatSqlfluffCompact(data: LintResultCompact): string {
+  const total = data.errors + data.warnings;
+  if (total === 0) return `Sqlfluff: no issues found (${data.filesChecked} files checked).`;
+  return `Sqlfluff: ${data.errors} errors, ${data.warnings} warnings across ${data.filesChecked} files.`;
+}
+
+/** Formats structured Yamllint results into a human-readable diagnostic summary. */
+export function formatYamllint(data: YamllintResult): string {
+  const total = data.errors + data.warnings;
+  if (total === 0) return `Yamllint: no issues found (${data.filesChecked} files checked).`;
+
+  const lines = [`Yamllint: ${data.errors} errors, ${data.warnings} warnings`];
+  for (const d of data.diagnostics ?? []) {
+    const loc = d.column ? `${d.file}:${d.line}:${d.column}` : `${d.file}:${d.line}`;
+    lines.push(`  ${loc} ${d.severity} ${d.rule}: ${d.message}`);
+  }
+  return lines.join("\n");
+}
+
+export function compactYamllintMap(data: YamllintResult): LintResultCompact {
+  return {
+    errors: data.errors,
+    warnings: data.warnings,
+    filesChecked: data.filesChecked,
+  };
+}
+
+export function formatYamllintCompact(data: LintResultCompact): string {
+  const total = data.errors + data.warnings;
+  if (total === 0) return `Yamllint: no issues found (${data.filesChecked} files checked).`;
+  return `Yamllint: ${data.errors} errors, ${data.warnings} warnings across ${data.filesChecked} files.`;
 }

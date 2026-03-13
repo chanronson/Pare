@@ -3,6 +3,10 @@ import type {
   LintDiagnostic,
   FormatCheckResult,
   FormatWriteResult,
+  SqlfluffResult,
+  SqlfluffDiagnostic,
+  YamllintResult,
+  YamllintDiagnostic,
 } from "../schemas/index.js";
 
 /**
@@ -678,6 +682,112 @@ interface HadolintJsonEntry {
   level?: string;
   code?: string;
   message?: string;
+}
+
+/**
+ * Parses Sqlfluff JSON output (from `sqlfluff lint --format json`).
+ *
+ * Sqlfluff JSON format:
+ * [{ "filepath": "path", "violations": [{ "start_line_no": 1, "start_line_pos": 1, "code": "LT09", "description": "...", "name": "...", "warning": false }] }]
+ */
+export function parseSqlfluffJson(stdout: string): SqlfluffResult {
+  let files: SqlfluffJsonEntry[];
+  try {
+    files = JSON.parse(stdout);
+  } catch {
+    return { diagnostics: [], errors: 0, warnings: 0, filesChecked: 0 };
+  }
+
+  const diagnostics: SqlfluffDiagnostic[] = [];
+  const filesSet = new Set<string>();
+
+  for (const file of files) {
+    const filePath = file.filepath ?? "unknown";
+    filesSet.add(filePath);
+
+    for (const v of file.violations ?? []) {
+      const isWarning = v.warning === true;
+      const severity = isWarning ? "warning" : "error";
+
+      const diag: SqlfluffDiagnostic = {
+        file: filePath,
+        line: v.start_line_no ?? 0,
+        column: v.start_line_pos,
+        severity,
+        rule: v.code ?? "unknown",
+        message: v.description ?? "",
+        name: v.name,
+      };
+      diagnostics.push(diag);
+    }
+  }
+
+  const errors = diagnostics.filter((d) => d.severity === "error").length;
+  const warnings = diagnostics.filter((d) => d.severity === "warning").length;
+
+  return {
+    diagnostics,
+    errors,
+    warnings,
+    filesChecked: filesSet.size,
+  };
+}
+
+interface SqlfluffJsonEntry {
+  filepath?: string;
+  violations?: {
+    start_line_no?: number;
+    start_line_pos?: number;
+    code?: string;
+    description?: string;
+    name?: string;
+    warning?: boolean;
+  }[];
+}
+
+/**
+ * Parses Yamllint parsable output (from `yamllint -f parsable`).
+ *
+ * Yamllint parsable format:
+ * file:line:column: [level] message (rule)
+ */
+export function parseYamllintParsable(stdout: string): YamllintResult {
+  const diagnostics: YamllintDiagnostic[] = [];
+  const filesSet = new Set<string>();
+
+  const lines = stdout.split("\n").filter(Boolean);
+
+  for (const line of lines) {
+    // Regex matches: file:line:column: [level] message (rule)
+    const match = line.match(/^([^:]+):(\d+):(\d+):\s+\[([^\]]+)\]\s+(.*?)(?:\s+\(([^)]+)\))?$/);
+    if (!match) continue;
+
+    const [, file, lineStr, colStr, level, message, rule] = match;
+    filesSet.add(file);
+
+    let severity: "error" | "warning" | "info" = "info";
+    if (level === "error") severity = "error";
+    else if (level === "warning") severity = "warning";
+
+    diagnostics.push({
+      file,
+      line: parseInt(lineStr, 10),
+      column: parseInt(colStr, 10),
+      severity,
+      rule: rule ?? "unknown",
+      message: message.trim(),
+    });
+  }
+
+  const errors = diagnostics.filter((d) => d.severity === "error").length;
+  const warnings = diagnostics.filter((d) => d.severity === "warning").length;
+
+  return {
+    diagnostics,
+    errors,
+    warnings,
+    filesChecked: filesSet.size,
+  };
 }
 
 /**

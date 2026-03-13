@@ -14,6 +14,8 @@ import { registerStylelintTool } from "./stylelint.js";
 import { registerOxlintTool } from "./oxlint.js";
 import { registerShellcheckTool } from "./shellcheck.js";
 import { registerHadolintTool } from "./hadolint.js";
+import { registerSqlfluffTool } from "./sqlfluff.js";
+import { registerYamllintTool } from "./yamllint.js";
 
 const TOOL_DEFS: Array<{
   name: string;
@@ -73,6 +75,18 @@ const TOOL_DEFS: Array<{
     description:
       "Runs Hadolint (Dockerfile linter) and returns structured diagnostics (file, line, rule, severity, message).",
     register: registerHadolintTool,
+  },
+  {
+    name: "sqlfluff",
+    description:
+      "Runs Sqlfluff (SQL linter) and returns structured diagnostics (file, line, column, rule, severity, message).",
+    register: registerSqlfluffTool,
+  },
+  {
+    name: "yamllint",
+    description:
+      "Runs Yamllint (YAML linter) and returns structured diagnostics (file, line, column, rule, severity, message).",
+    register: registerYamllintTool,
   },
 ];
 

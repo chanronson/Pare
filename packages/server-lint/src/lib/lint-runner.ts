@@ -27,3 +27,11 @@ export async function shellcheckCmd(args: string[], cwd?: string): Promise<RunRe
 export async function hadolintCmd(args: string[], cwd?: string): Promise<RunResult> {
   return run("hadolint", args, { cwd, timeout: 180_000 });
 }
+
+export async function sqlfluffCmd(args: string[], cwd?: string): Promise<RunResult> {
+  return run("sqlfluff", args, { cwd, timeout: 180_000 });
+}
+
+export async function yamllintCmd(args: string[], cwd?: string): Promise<RunResult> {
+  return run("yamllint", args, { cwd, timeout: 180_000 });
+}

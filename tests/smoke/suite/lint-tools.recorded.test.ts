@@ -8,9 +8,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
 import {
   LintResultSchema,
   FormatCheckResultSchema,
+  SqlfluffResultSchema,
+  YamllintResultSchema,
 } from "../../../packages/server-lint/src/schemas/index.js";
 
 // Mock the lint runner module used by all lint tools
@@ -22,6 +27,8 @@ vi.mock("../../../packages/server-lint/src/lib/lint-runner.js", () => ({
   oxlintCmd: vi.fn(),
   shellcheckCmd: vi.fn(),
   hadolintCmd: vi.fn(),
+  sqlfluffCmd: vi.fn(),
+  yamllintCmd: vi.fn(),
 }));
 
 vi.mock("../../../packages/server-lint/src/lib/parsers.js", async (importOriginal) => {
@@ -33,9 +40,16 @@ vi.mock("../../../packages/server-lint/src/lib/parsers.js", async (importOrigina
   };
 });
 
-import { eslint, prettier } from "../../../packages/server-lint/src/lib/lint-runner.js";
+import {
+  eslint,
+  prettier,
+  sqlfluffCmd,
+  yamllintCmd,
+} from "../../../packages/server-lint/src/lib/lint-runner.js";
 import { registerLintTool } from "../../../packages/server-lint/src/tools/lint.js";
 import { registerFormatCheckTool } from "../../../packages/server-lint/src/tools/format-check.js";
+import { registerSqlfluffTool } from "../../../packages/server-lint/src/tools/sqlfluff.js";
+import { registerYamllintTool } from "../../../packages/server-lint/src/tools/yamllint.js";
 
 type ToolHandler = (params: Record<string, unknown>) => Promise<{
   content: unknown[];
@@ -141,5 +155,81 @@ describe("Recorded: lint.format-check", () => {
     expect(parsed.formatted).toBe(false);
     expect(parsed.files).toBeDefined();
     expect(parsed.files!.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// sqlfluff — recorded
+// ═══════════════════════════════════════════════════════════════════════════
+describe("Recorded: lint.sqlfluff", () => {
+  let handler: ToolHandler;
+
+  beforeEach(() => {
+    vi.mocked(sqlfluffCmd).mockReset();
+    vi.clearAllMocks();
+    const server = new FakeServer();
+    registerSqlfluffTool(server as never);
+    handler = server.tools.get("sqlfluff")!.handler;
+  });
+
+  async function callAndValidate(params: Record<string, unknown>) {
+    const result = await handler(params);
+    expect(result).toHaveProperty("structuredContent");
+    const parsed = SqlfluffResultSchema.parse(result.structuredContent);
+    return { result, parsed };
+  }
+
+  function mockSqlfluffWithFixture(name: string, stderr = "", exitCode = 0) {
+    vi.mocked(sqlfluffCmd).mockResolvedValueOnce({
+      stdout: loadFixture("sqlfluff", name),
+      stderr,
+      exitCode,
+    });
+  }
+
+  it("S1 [recorded] with violations", async () => {
+    mockSqlfluffWithFixture("basic.json", "", 1);
+    const { parsed } = await callAndValidate({ dialect: "ansi", compact: false });
+    expect(parsed.errors).toBeGreaterThan(0);
+    expect(parsed.diagnostics).toBeDefined();
+    expect(parsed.diagnostics!.length).toBeGreaterThan(0);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// yamllint — recorded
+// ═══════════════════════════════════════════════════════════════════════════
+describe("Recorded: lint.yamllint", () => {
+  let handler: ToolHandler;
+
+  beforeEach(() => {
+    vi.mocked(yamllintCmd).mockReset();
+    vi.clearAllMocks();
+    const server = new FakeServer();
+    registerYamllintTool(server as never);
+    handler = server.tools.get("yamllint")!.handler;
+  });
+
+  async function callAndValidate(params: Record<string, unknown>) {
+    const result = await handler(params);
+    expect(result).toHaveProperty("structuredContent");
+    const parsed = YamllintResultSchema.parse(result.structuredContent);
+    return { result, parsed };
+  }
+
+  function mockYamllintWithFixture(name: string, stderr = "", exitCode = 0) {
+    vi.mocked(yamllintCmd).mockResolvedValueOnce({
+      stdout: loadFixture("yamllint", name),
+      stderr,
+      exitCode,
+    });
+  }
+
+  it("S1 [recorded] with violations", async () => {
+    mockYamllintWithFixture("basic.txt", "", 1);
+    const { parsed } = await callAndValidate({ compact: false });
+    expect(parsed.errors + parsed.warnings).toBeGreaterThan(0);
+    expect(parsed.diagnostics).toBeDefined();
+    expect(parsed.diagnostics!.length).toBeGreaterThan(0);
   });
 });

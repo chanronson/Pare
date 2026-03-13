@@ -1,0 +1,8 @@
+{
+  "_invocation_id": "a988ef1b-d135-4687-9459-e85b35a3ab04",
+  "linked": {
+    "0": { "name": "model.dummy_project.my_model", "type": "model", "succ": [1, 2] },
+    "1": { "name": "test.dummy_project.not_null_my_model_id.43e0e9183a", "type": "test" },
+    "2": { "name": "test.dummy_project.unique_my_model_id.7a8b3e1711", "type": "test" }
+  }
+}
