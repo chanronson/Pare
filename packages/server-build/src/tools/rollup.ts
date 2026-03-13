@@ -20,6 +20,7 @@ export function registerRollupTool(server: McpServer) {
       title: "rollup",
       description:
         "Runs Rollup bundler and returns structured bundle output with errors and warnings.",
+      annotations: { readOnlyHint: false },
       inputSchema: {
         config: z
           .string()
@@ -52,7 +53,9 @@ export function registerRollupTool(server: McpServer) {
           .max(INPUT_LIMITS.ARRAY_MAX)
           .optional()
           .default([])
-          .describe("Additional rollup flags"),
+          .describe(
+            "Additional rollup flags. Each element is validated to prevent flag injection.",
+          ),
         path: projectPathInput,
         compact: compactInput,
       },
@@ -82,6 +85,9 @@ export function registerRollupTool(server: McpServer) {
       if (watch) cliArgs.push("--watch");
 
       if (args) {
+        for (const arg of args) {
+          assertNoFlagInjection(arg, "args");
+        }
         cliArgs.push(...args);
       }
 

@@ -6,6 +6,7 @@ import {
   INPUT_LIMITS,
   compactInput,
   projectPathInput,
+  coerceJsonArray,
 } from "@paretools/shared";
 import { rsyncCmd } from "../lib/remote-runner.js";
 import { parseRsyncOutput } from "../lib/parsers.js";
@@ -58,17 +59,23 @@ export function registerRsyncTool(server: McpServer) {
           .boolean()
           .optional()
           .describe("Delete files in destination that don't exist in source. Use with caution!"),
-        exclude: z
-          .array(z.string().max(INPUT_LIMITS.SHORT_STRING_MAX))
-          .max(INPUT_LIMITS.ARRAY_MAX)
-          .optional()
-          .describe("Patterns to exclude from sync (e.g. node_modules, .git)"),
-        include: z
-          .array(z.string().max(INPUT_LIMITS.SHORT_STRING_MAX))
-          .max(INPUT_LIMITS.ARRAY_MAX)
-          .optional()
-          .describe("Patterns to include in sync"),
-        sshPort: z.number().optional().describe("SSH port for remote transfers"),
+        exclude: z.preprocess(
+          coerceJsonArray,
+          z
+            .array(z.string().max(INPUT_LIMITS.SHORT_STRING_MAX))
+            .max(INPUT_LIMITS.ARRAY_MAX)
+            .optional()
+            .describe("Patterns to exclude from sync (e.g. node_modules, .git)"),
+        ),
+        include: z.preprocess(
+          coerceJsonArray,
+          z
+            .array(z.string().max(INPUT_LIMITS.SHORT_STRING_MAX))
+            .max(INPUT_LIMITS.ARRAY_MAX)
+            .optional()
+            .describe("Patterns to include in sync"),
+        ),
+        sshPort: z.coerce.number().optional().describe("SSH port for remote transfers"),
         identityFile: z
           .string()
           .max(INPUT_LIMITS.PATH_MAX)
@@ -97,6 +104,14 @@ export function registerRsyncTool(server: McpServer) {
       assertNoFlagInjection(source, "source");
       assertNoFlagInjection(destination, "destination");
       if (identityFile) assertNoFlagInjection(identityFile, "identityFile");
+
+      // Validate exclude/include array elements to prevent flag injection
+      for (const pattern of exclude || []) {
+        assertNoFlagInjection(pattern, "exclude");
+      }
+      for (const pattern of include || []) {
+        assertNoFlagInjection(pattern, "include");
+      }
 
       const cwd = path || process.cwd();
       const args: string[] = [];

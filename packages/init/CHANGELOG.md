@@ -1,5 +1,9 @@
 # @paretools/init
 
+## 0.15.0
+
+## 0.14.2
+
 ## 0.14.1
 
 ### Patch Changes

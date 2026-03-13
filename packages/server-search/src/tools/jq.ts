@@ -74,7 +74,10 @@ export function registerJqTool(server: McpServer) {
           .describe(
             "Named JSON variables for parameterized expressions (maps to repeated --argjson NAME VALUE)",
           ),
-        indent: z.number().optional().describe("Number of spaces for indentation (--indent)"),
+        indent: z.coerce
+          .number()
+          .optional()
+          .describe("Number of spaces for indentation (--indent)"),
         joinOutput: z
           .boolean()
           .optional()
@@ -135,6 +138,7 @@ export function registerJqTool(server: McpServer) {
       // Add named string variables
       if (arg) {
         for (const [name, value] of Object.entries(arg)) {
+          assertNoFlagInjection(name, "arg key");
           args.push("--arg", name, value);
         }
       }
@@ -142,6 +146,7 @@ export function registerJqTool(server: McpServer) {
       // Add named JSON variables
       if (argjson) {
         for (const [name, value] of Object.entries(argjson)) {
+          assertNoFlagInjection(name, "argjson key");
           args.push("--argjson", name, value);
         }
       }

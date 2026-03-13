@@ -1,6 +1,6 @@
 {
   "name": "@paretools/go",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "mcpName": "io.github.Dave-London/pare-go",
   "description": "MCP server for Go — structured build, test, vet, and module data for AI agents",
   "license": "MIT",
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@paretools/tsconfig": "workspace:*",
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.4.0",
     "typescript": "^5.7.0",
     "vitest": "^4.0.18"
   }

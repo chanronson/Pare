@@ -1,6 +1,6 @@
 {
   "name": "@paretools/nix",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "mcpName": "io.github.Dave-London/pare-nix",
   "description": "MCP server for Nix — structured build, develop, and flake output for AI agents",
   "license": "MIT",
@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@paretools/tsconfig": "workspace:*",
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.4.0",
     "typescript": "^5.7.0",
     "vitest": "^4.0.18"
   }

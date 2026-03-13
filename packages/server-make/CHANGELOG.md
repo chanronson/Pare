@@ -1,5 +1,31 @@
 # @paretools/make
 
+## 0.15.0
+
+### Patch Changes
+
+- [#737](https://github.com/Dave-London/Pare/pull/737) [`9f9c3f2`](https://github.com/Dave-London/Pare/commit/9f9c3f2b8866d862a3b5f17100075e5362b4e454) Thanks [@Dave-London](https://github.com/Dave-London)! - fix(security): harden input validation across go, docker, build, and make servers
+  - Block dangerous Go flags (-exec, -toolexec) in buildArgs to prevent arbitrary command execution
+  - Add assertNoFlagInjection for ldflags and gcflags in go build
+  - Expand Docker volume mount blocklist with /home, /var/lib/docker, /tmp, /boot, /usr and sensitive credential path segments (.ssh, .aws, .gnupg, .kube, etc.)
+  - Block dangerous env var keys (PATH, LD_PRELOAD, NODE_OPTIONS, etc.) in build and webpack tools
+  - Validate make/just env key names match strict identifier pattern
+  - Add assertAllowedRoot check on Docker exec/run envFile parameter
+
+- Updated dependencies []:
+  - @paretools/shared@0.15.0
+
+## 0.14.2
+
+### Patch Changes
+
+- [#700](https://github.com/Dave-London/Pare/pull/700) [`61e8ee9`](https://github.com/Dave-London/Pare/commit/61e8ee9f8697979fa68b2aff2ebc840e1af9f09a) Thanks [@Dave-London](https://github.com/Dave-London)! - fix: add input coercion for numeric and array parameters
+
+  MCP clients sometimes serialize numbers as strings (`"5"` instead of `5`) and arrays as JSON strings. Added `z.coerce.number()` for all numeric input parameters and `coerceJsonArray` preprocessing for array input parameters to handle these cases gracefully.
+
+- Updated dependencies [[`61e8ee9`](https://github.com/Dave-London/Pare/commit/61e8ee9f8697979fa68b2aff2ebc840e1af9f09a)]:
+  - @paretools/shared@0.14.2
+
 ## 0.14.1
 
 ### Patch Changes

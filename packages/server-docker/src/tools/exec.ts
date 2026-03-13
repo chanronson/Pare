@@ -3,6 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   compactDualOutput,
   assertNoFlagInjection,
+  assertAllowedRoot,
   INPUT_LIMITS,
   compactInput,
 } from "@paretools/shared";
@@ -19,6 +20,7 @@ export function registerExecTool(server: McpServer) {
       title: "Docker Exec",
       description:
         "Executes arbitrary commands inside a running Docker container and returns structured output. WARNING: may execute untrusted code.",
+      annotations: { destructiveHint: true },
       inputSchema: {
         container: z.string().max(INPUT_LIMITS.SHORT_STRING_MAX).describe("Container name or ID"),
         command: z
@@ -99,7 +101,13 @@ export function registerExecTool(server: McpServer) {
       assertNoFlagInjection(command[0], "command");
       if (workdir) assertNoFlagInjection(workdir, "workdir");
       if (user) assertNoFlagInjection(user, "user");
-      if (envFile) assertNoFlagInjection(envFile, "envFile");
+      if (envFile) {
+        assertNoFlagInjection(envFile, "envFile");
+        // Validate envFile is within the project directory to prevent arbitrary host file reads
+        const { resolve } = await import("node:path");
+        const resolvedEnvFile = resolve(path || process.cwd(), envFile);
+        assertAllowedRoot(resolvedEnvFile, "docker");
+      }
 
       const args = ["exec"];
       if (detach) args.push("-d");

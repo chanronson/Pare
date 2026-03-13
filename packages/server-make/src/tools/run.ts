@@ -20,6 +20,7 @@ export function registerRunTool(server: McpServer) {
       title: "Make/Just Run",
       description:
         "Runs a make or just target and returns structured output (stdout, stderr, exit code, duration). Auto-detects make vs just.",
+      annotations: { readOnlyHint: false },
       inputSchema: {
         target: z.string().max(INPUT_LIMITS.SHORT_STRING_MAX).describe("Target to run"),
         args: z
@@ -27,7 +28,9 @@ export function registerRunTool(server: McpServer) {
           .max(INPUT_LIMITS.ARRAY_MAX)
           .optional()
           .default([])
-          .describe("Additional arguments to pass to the target"),
+          .describe(
+            "Additional arguments to pass to the target. Each element is validated to prevent flag injection.",
+          ),
         path: projectPathInput,
         tool: z
           .enum(["auto", "make", "just"])
@@ -49,7 +52,10 @@ export function registerRunTool(server: McpServer) {
           .boolean()
           .optional()
           .describe("Preview commands without executing (make -n / just --dry-run)"),
-        jobs: z.number().optional().describe("Number of parallel jobs (make -j N, make only)"),
+        jobs: z.coerce
+          .number()
+          .optional()
+          .describe("Number of parallel jobs (make -j N, make only)"),
         silent: z
           .boolean()
           .optional()
@@ -97,6 +103,11 @@ export function registerRunTool(server: McpServer) {
       const cwd = path || process.cwd();
       assertNoFlagInjection(target, "target");
       if (file) assertNoFlagInjection(file, "file");
+      if (args) {
+        for (const arg of args) {
+          assertNoFlagInjection(arg, "args");
+        }
+      }
 
       const resolved = resolveTool(tool || "auto", cwd);
 
@@ -122,9 +133,17 @@ export function registerRunTool(server: McpServer) {
       // Build environment variable arguments
       // For make: pass as VAR=VALUE positional args
       // For just: pass as VAR=VALUE positional args (just supports env var overrides this way)
+      const ENV_KEY_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
       const envArgs: string[] = [];
       if (env) {
         for (const [key, value] of Object.entries(env)) {
+          if (!ENV_KEY_RE.test(key)) {
+            throw new Error(
+              `Invalid environment variable name: "${key}". ` +
+                "Must match /^[A-Za-z_][A-Za-z0-9_]*$/.",
+            );
+          }
+          assertNoFlagInjection(value, "env value");
           envArgs.push(`${key}=${value}`);
         }
       }

@@ -25,6 +25,7 @@ export function registerBiomeFormatTool(server: McpServer) {
       title: "Biome Format",
       description:
         "Formats files with Biome (format --write) and returns a structured list of changed files.",
+      annotations: { readOnlyHint: false },
       inputSchema: {
         path: projectPathInput,
         patterns: z
@@ -48,7 +49,7 @@ export function registerBiomeFormatTool(server: McpServer) {
           .enum(["tab", "space"])
           .optional()
           .describe("Indent style override (tab or space)"),
-        lineWidth: z.number().optional().describe("Line width override"),
+        lineWidth: z.coerce.number().optional().describe("Line width override"),
         quoteStyle: z
           .enum(["single", "double"])
           .optional()

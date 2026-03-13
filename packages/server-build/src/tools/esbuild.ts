@@ -24,6 +24,7 @@ export function registerEsbuildTool(server: McpServer) {
       title: "esbuild",
       description:
         "Runs the esbuild bundler and returns structured errors, warnings, and output files.",
+      annotations: { readOnlyHint: false },
       inputSchema: {
         path: projectPathInput,
         entryPoints: z
@@ -115,7 +116,9 @@ export function registerEsbuildTool(server: McpServer) {
           .max(INPUT_LIMITS.ARRAY_MAX)
           .optional()
           .default([])
-          .describe("Additional esbuild flags"),
+          .describe(
+            "Additional esbuild flags. Each element is validated to prevent flag injection.",
+          ),
         compact: compactInput,
       },
       outputSchema: EsbuildResultSchema,
@@ -217,6 +220,9 @@ export function registerEsbuildTool(server: McpServer) {
       }
 
       if (args) {
+        for (const arg of args) {
+          assertNoFlagInjection(arg, "args");
+        }
         cliArgs.push(...args);
       }
 

@@ -1,6 +1,6 @@
 {
   "name": "@paretools/init",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "description": "Setup CLI and health check for Pare MCP servers — auto-detect clients, install servers, verify connections",
   "license": "MIT",
   "keywords": [
@@ -25,6 +25,7 @@
   },
   "type": "module",
   "bin": {
+    "@paretools/init": "./dist/index.js",
     "pare-init": "./dist/index.js",
     "pare-doctor": "./dist/doctor.js"
   },
@@ -63,7 +64,7 @@
   },
   "devDependencies": {
     "@paretools/tsconfig": "workspace:*",
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.4.0",
     "typescript": "^5.7.0",
     "vitest": "^4.0.18"
   }
